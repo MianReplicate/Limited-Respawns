@@ -16,10 +16,10 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "mc.mian.templatemod.fabric.TemplateModFabric"
+      "mc.mian.templatemod.fabric.LimitedLivesFabric"
     ],
     "client": [
-      "mc.mian.templatemod.fabric.TemplateModFabricClient"
+      "mc.mian.templatemod.fabric.LimitedLivesFabricClient"
     ]
   },
   "mixins": [
