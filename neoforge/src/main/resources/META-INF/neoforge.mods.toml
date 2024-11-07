@@ -19,7 +19,7 @@ modId = "neoforge"
 type = 'required'
 versionRange = "${neo_version_range}"
 ordering = "NONE"
-side = "BOTH"
+side = "SERVER"
 
 #Minecraft dependency
 [[dependencies.${mod_id}]]
@@ -27,7 +27,7 @@ modId = "minecraft"
 type = 'required'
 versionRange = "[${minimum_minecraft_version},${maximum_minecraft_version})"
 ordering = "NONE"
-side = "BOTH"
+side = "SERVER"
 
 #Mixins
 [[mixins]]

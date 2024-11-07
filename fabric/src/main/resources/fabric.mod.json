@@ -13,13 +13,10 @@
     "issues": "${issue_tracker_url}"
   },
   "license": "${mod_license}",
-  "environment": "*",
+  "environment": "server",
   "entrypoints": {
     "main": [
-      "mc.mian.templatemod.fabric.LimitedLivesFabric"
-    ],
-    "client": [
-      "mc.mian.templatemod.fabric.LimitedLivesFabricClient"
+      "mc.mian.limitedrespawns.fabric.LimitedRespawnsFabric"
     ]
   },
   "mixins": [

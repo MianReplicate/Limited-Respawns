@@ -4,7 +4,9 @@
   "package": "mc.mian.limitedrespawns.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "TitleScreenMixin"
+    "LivingEntityMixin",
+    "PlayerListMixin",
+    "MinecraftServerMixin"
   ],
   "client": [
   ],

@@ -130,8 +130,6 @@ architectury {
 
 dependencies {
     // thanks sodium for adding neoforge support, very cool :>
-    def mcVersion = rootProject.hasProperty('common_networking_mc_version') ? "${common_networking_mc_version}" : "${minecraft_version}"
-    modApi(include("mysticdrew:common-networking-${loomPlatform}:${common_networking_version}-${mcVersion}"))
 
     if(!disable_runtimes.toBoolean()) {
         modRuntimeOnly("mezz.jei:jei-${minecraft_version}-${loomPlatform}:${jei_version}")

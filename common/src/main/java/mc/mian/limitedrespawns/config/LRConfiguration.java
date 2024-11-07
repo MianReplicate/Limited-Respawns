@@ -13,6 +13,8 @@ public class LRConfiguration {
     public final ForgeConfigSpec.IntValue loseRespawnCount;
     // do dead players get banned upon death?
     public final ForgeConfigSpec.BooleanValue bannedUponDeath;
+    // what messages should be used every time a player respawns?
+
 
     public final HashMap<TimedEnums, ForgeConfigSpec.ConfigValue<?>> deadConfig;
     public final HashMap<TimedEnums, ForgeConfigSpec.ConfigValue<?>> aliveConfig;
@@ -56,11 +58,13 @@ public class LRConfiguration {
             mapToUse.put(TimedEnums.IS_GLOBAL, buildBoolean(
                     builder, "Global Timer", false, "Should the timer run globally across the server for all players or be player-specific?"
             ));
-            if(i == 0){
-                mapToUse.put(TimedEnums.RUN_WHILE_OFFLINE, buildBoolean(
-                        builder, "Runs Offline", false, "Should an offline player be accounted for?"
-                ));
-            }
+
+
+//            if(i == 0){
+//                mapToUse.put(TimedEnums.RUN_WHILE_OFFLINE, buildBoolean(
+//                        builder, "Runs Offline", false, "Should an offline player be accounted for?"
+//                ));
+//            }
 
             builder.pop();
         }

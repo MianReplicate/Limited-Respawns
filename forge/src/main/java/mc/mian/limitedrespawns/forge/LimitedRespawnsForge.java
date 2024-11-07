@@ -11,10 +11,10 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 @Mod(LRConstants.MOD_ID)
-public class LimitedLivesForge {
+public class LimitedRespawnsForge {
     public static final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
     public static final IEventBus commonEventBus = MinecraftForge.EVENT_BUS;
-    public LimitedLivesForge() {
+    public LimitedRespawnsForge() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ConfigHolder.SERVER_SPEC);
 
         LimitedRespawns.config = ConfigHolder.SERVER;

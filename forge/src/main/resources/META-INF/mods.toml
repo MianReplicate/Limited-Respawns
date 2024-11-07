@@ -19,7 +19,7 @@ modId = "forge"
 mandatory = true
 versionRange = "${forge_version_range}"
 ordering = "NONE"
-side = "BOTH"
+side = "SERVER"
 
 #Minecraft dependency
 [[dependencies.${mod_id}]]
@@ -27,4 +27,4 @@ modId = "minecraft"
 mandatory = true
 versionRange = "[${minimum_minecraft_version},${maximum_minecraft_version})"
 ordering = "NONE"
-side = "BOTH"
+side = "SERVER"

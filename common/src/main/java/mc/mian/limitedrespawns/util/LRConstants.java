@@ -11,5 +11,7 @@ public class LRConstants {
     public static final String MOD_DISPLAY_NAME = "Limited Respawns";
 
     public static final ResourceLocation RESPAWNS = LRUtil.modLoc("respawns");
+    public static final ResourceLocation NEEDED_RESPAWNS = LRUtil.modLoc("needed_respawns");
     public static final ResourceLocation TIME_OF_DEATH = LRUtil.modLoc("time_of_death");
+    public static final ResourceLocation LIMITED_RESPAWNS_DATA = LRUtil.modLoc("limited_respawns");
 }

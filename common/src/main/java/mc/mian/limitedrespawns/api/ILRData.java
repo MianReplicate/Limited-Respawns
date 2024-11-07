@@ -10,5 +10,6 @@ public interface ILRData extends Serializable<CompoundTag> {
     <T> T getValue(ResourceLocation key);
     <T> void setValue(ResourceLocation key, T value);
     void onChange();
-    void reduceRespawn(int amount);
+    void setRespawns(int amount, boolean triggerChange);
+    void onRespawn();
 }

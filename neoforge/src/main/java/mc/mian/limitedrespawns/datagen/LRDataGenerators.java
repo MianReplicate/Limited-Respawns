@@ -5,7 +5,7 @@ import net.minecraft.data.PackOutput;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 
-public class LLDataGenerators {
+public class LRDataGenerators {
 
     @SubscribeEvent
     public static void generateData(GatherDataEvent ev) {
@@ -13,7 +13,7 @@ public class LLDataGenerators {
         final PackOutput packOutput = gen.getPackOutput();
 
         if (ev.includeServer()) {
-            gen.addProvider(ev.includeServer(), new LLLangProvider(packOutput));
+            gen.addProvider(ev.includeServer(), new LRLangProvider(packOutput));
         }
     }
 }
