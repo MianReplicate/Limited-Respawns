@@ -5,11 +5,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 
-public interface ILRData extends Serializable<CompoundTag> {
+public interface ILRData extends IDataHolder {
     LivingEntity getLivingEntity();
-    <T> T getValue(ResourceLocation key);
-    <T> void setValue(ResourceLocation key, T value);
-    void onChange();
-    void setRespawns(int amount, boolean triggerChange);
+    void setRespawns(int amount);
+    int getRespawns();
     void onRespawn();
 }

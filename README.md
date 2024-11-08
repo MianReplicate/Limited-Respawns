@@ -1,7 +1,7 @@
 <img src="https://i.imgur.com/m7HTrr8.png">
 
 # Limited Respawns
-**....is a Minecraft mod that gives you a limited amount of respawns until you're dead forever (with some caveats..)**
+**....is a Minecraft mod that makes it so you can only respawn a certain amount of times until you run out.**
 
 ***This mod may be used in any modpack.***
 
@@ -19,8 +19,7 @@
     - and more!
 
 ## ❓ FAQ
-- Do you lose hearts in this?
-  - No, that feature within the popular Limited Lives mod is why I created this mod to begin with.
+
 
 ## 👏 Credits
 - Thanks to Jeryn99 for code used.

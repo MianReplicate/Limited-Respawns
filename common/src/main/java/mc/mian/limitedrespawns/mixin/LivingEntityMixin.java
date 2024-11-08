@@ -19,21 +19,31 @@ public class LivingEntityMixin implements ILRRetrieve {
     @Unique
     private LRData limitedRespawns$lrData;
 
+    // Initialize our data class
     @Inject(at = @At("TAIL"), method = "<init>")
     public <T extends Entity> void init(EntityType<T> entityType, Level level, CallbackInfo ci){
         this.limitedRespawns$lrData = new LRData((LivingEntity)(Object)this);
     }
 
+    // Add our data
     @Inject(at = @At("TAIL"), method = "addAdditionalSaveData")
     public void addLRData(CompoundTag compound, CallbackInfo ci){
         this.limitedRespawns$lrData.writeToNbt(compound);
     }
 
+    // Read our data
     @Inject(at = @At("TAIL"), method = "readAdditionalSaveData")
     public void readLRData(CompoundTag compound, CallbackInfo ci){
         this.limitedRespawns$lrData.deserializeNBT(compound.getCompound(LRConstants.LIMITED_RESPAWNS_DATA.getPath()));
     }
 
+    // Tick for player timer to give respawns
+    @Inject(at = @At("TAIL"), method = "tick")
+    public void tick(CallbackInfo ci){
+
+    }
+
+    // Retrieve data when needed
     @Override
     public LRData limitedRespawns$getData() {
         return limitedRespawns$lrData;
