@@ -30,6 +30,14 @@ public class LRConfiguration {
         RUN_WHILE_OFFLINE
     }
 
+    public Object getBasedOnDead(boolean died, TimedEnums timedEnum){
+        if(died){
+            return deadConfig.get(timedEnum).get();
+        } else {
+            return aliveConfig.get(timedEnum).get();
+        }
+    }
+
     public LRConfiguration(final ForgeConfigSpec.Builder builder) {
         this.deadConfig = new HashMap<>();
         this.aliveConfig = new HashMap<>();
@@ -49,7 +57,7 @@ public class LRConfiguration {
             HashMap<TimedEnums, ForgeConfigSpec.ConfigValue<?>> mapToUse = i == 0 ? aliveConfig : deadConfig;
             String display = i == 0 ? "Alive" : "Dead";
             builder.push(display+" Players");
-            mapToUse.put(TimedEnums.TICKS_UNTIL_GAIN_RESPAWNS, buildInt(
+            mapToUse.put(TimedEnums.TICKS_UNTIL_GAIN_RESPAWNS, buildLong(
                     builder, "How Many Ticks Until Gain Respawn:", -1, -1, Integer.MAX_VALUE, "How many in-game ticks until a player gains a respawn? Setting the value to -1 disables this entire category"
             ));
             mapToUse.put(TimedEnums.GIVE_AMOUNT_OF_RESPAWNS, buildInt(
@@ -72,6 +80,10 @@ public class LRConfiguration {
     }
 
     private static ForgeConfigSpec.IntValue buildInt(final ForgeConfigSpec.Builder builder, String translationPath, int defaultValue, int min, int max, @Nullable String comment) {
+        return comment == null ? builder.translation(translationPath).defineInRange(translationPath, defaultValue, min, max) : builder.comment(comment).translation(translationPath).defineInRange(translationPath, defaultValue, min, max);
+    }
+
+    private static ForgeConfigSpec.LongValue buildLong(final ForgeConfigSpec.Builder builder, String translationPath, long defaultValue, long min, long max, @Nullable String comment) {
         return comment == null ? builder.translation(translationPath).defineInRange(translationPath, defaultValue, min, max) : builder.comment(comment).translation(translationPath).defineInRange(translationPath, defaultValue, min, max);
     }
 

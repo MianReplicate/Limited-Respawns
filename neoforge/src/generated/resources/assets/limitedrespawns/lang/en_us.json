@@ -1,0 +1,8 @@
+{
+  "chat.message.limitedrespawns.get_respawns": "%s has %s respawns",
+  "chat.message.limitedrespawns.respawns_changed": "You've %s some respawns: %s -> %s",
+  "chat.message.limitedrespawns.set_respawns": "Set %s's respawns to %s",
+  "chat.message.limitedrespawns.time_back": "You will come back once you've received %s more respawns",
+  "purgatory.limitedrespawns.lost_respawns": "You have lost all your respawns, you will respawn once you've gained %s respawns.",
+  "purgatory.limitedrespawns.lost_respawns_no_time": "You have lost all your respawns, you are now permanently dead."
+}

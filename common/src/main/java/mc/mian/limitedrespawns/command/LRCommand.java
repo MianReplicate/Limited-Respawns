@@ -3,6 +3,7 @@ package mc.mian.limitedrespawns.command;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import mc.mian.limitedrespawns.data.LRData;
 import mc.mian.limitedrespawns.util.LRConstants;
@@ -22,6 +23,17 @@ public class LRCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher){
         dispatcher.register(
                 Commands.literal("lr")
+                        .then(Commands.literal("setrespawns")
+                                .then(Commands.argument("amount", IntegerArgumentType.integer(0))
+                                        .executes(commandContext -> setRespawns(commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "amount")))
+                                        .then(Commands.argument("players", GameProfileArgument.gameProfile())
+                                                .suggests(((context, builder) -> {
+                                                    ArrayList<String> suggestList = new ArrayList<>();
+                                                    List<GameProfile> gameProfiles = LRUtil.getGameProfiles(context.getSource().getServer(), true);
+                                                    gameProfiles.forEach(gameProfile -> suggestList.add(gameProfile.getName()));
+                                                    return SharedSuggestionProvider.suggest(suggestList, builder);
+                                                }))
+                                                .executes(commandContext -> setRespawns(commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "amount"), GameProfileArgument.getGameProfiles(commandContext, "players"))))))
                         .then(Commands.literal("getrespawns")
                                 .executes(commandContext -> getRespawns(commandContext.getSource()))
                                 .then(Commands.argument("players", GameProfileArgument.gameProfile())
@@ -37,8 +49,7 @@ public class LRCommand {
 
     private static int getRespawns(CommandSourceStack commandSourceStack) throws CommandSyntaxException {
         ServerPlayer serverPlayer = commandSourceStack.getPlayerOrException();
-        LRData.get(serverPlayer).ifPresent(lrData -> serverPlayer
-                .displayClientMessage(Component.translatable("chat.message.limitedrespawns.get_respawns",
+        LRData.get(serverPlayer).ifPresent(lrData -> commandSourceStack.sendSuccess(() ->Component.translatable("chat.message.limitedrespawns.get_respawns",
                         serverPlayer.getName(), lrData.getRespawns()), false));
 
         return Command.SINGLE_SUCCESS;
@@ -47,10 +58,26 @@ public class LRCommand {
     private static int getRespawns(CommandSourceStack commandSourceStack, Collection<GameProfile> gameProfiles) {
         gameProfiles.forEach(gameProfile ->
              LRUtil.getDataHolderFromProfile(commandSourceStack.getServer(), gameProfile).ifPresent(dataHolder ->
-                     commandSourceStack.sendSystemMessage(
+                     commandSourceStack.sendSuccess(() ->
                              Component.translatable("chat.message.limitedrespawns.get_respawns",
-                                     gameProfile.getName(), dataHolder.getValue(LRConstants.RESPAWNS)))));
+                                     gameProfile.getName(), dataHolder.getValue(LRConstants.RESPAWNS)), false)));
 
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int setRespawns(CommandSourceStack commandSourceStack, int amount) throws CommandSyntaxException {
+        ServerPlayer serverPlayer = commandSourceStack.getPlayerOrException();
+        LRData.get(serverPlayer).ifPresent(lrData -> lrData.setRespawns(amount));
+        commandSourceStack.sendSuccess(() -> Component.translatable("chat.message.limitedrespawns.set_respawns", serverPlayer.getName(), amount), true);
+
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int setRespawns(CommandSourceStack commandSourceStack, int amount, Collection<GameProfile> gameProfiles) {
+        gameProfiles.forEach(gameProfile -> {
+                LRUtil.saveLRDataToProfile(commandSourceStack.getServer(), gameProfile, dataHolder -> dataHolder.setValue(LRConstants.RESPAWNS, amount));
+                commandSourceStack.sendSuccess(() -> Component.translatable("chat.message.limitedrespawns.set_respawns", gameProfile.getName(), amount), true);
+        });
         return Command.SINGLE_SUCCESS;
     }
 }

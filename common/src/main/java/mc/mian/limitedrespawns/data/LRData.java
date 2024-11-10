@@ -17,13 +17,14 @@ public class LRData extends LRDataHolder implements ILRData {
 
     public LRData(LivingEntity livingEntity){
         this.livingEntity = livingEntity;
-
-        this.dataMap.putIfAbsent(LRConstants.RESPAWNS, LimitedRespawns.config.startingRespawns.get());
-        this.dataMap.putIfAbsent(LRConstants.TIME_OF_DEATH, 0L);
     }
 
     public static Optional<LRData> get(LivingEntity livingEntity){
         return Optional.ofNullable(((ILRRetrieve) livingEntity).limitedRespawns$getData());
+    }
+
+    public boolean hasEnoughRespawns(){
+        return this.getRespawns() - LimitedRespawns.config.loseRespawnCount.get() >= 0;
     }
 
     @Override
@@ -51,18 +52,22 @@ public class LRData extends LRDataHolder implements ILRData {
 
     @Override
     public void onRespawn(){
-        if(!this.livingEntity.level().isClientSide()){
+        if(this.livingEntity.level().isClientSide()){
             throw new RuntimeException("who tf is running this on the client");
         }
         int respawns = this.getValue(LRConstants.RESPAWNS);
         int amountToLose = LimitedRespawns.config.loseRespawnCount.get();
         ServerPlayer serverPlayer = (ServerPlayer) livingEntity;
-        if(respawns - amountToLose < 0){
+        if(!this.hasEnoughRespawns()){
+            setValue(LRConstants.DEAD, true);
             serverPlayer.setGameMode(GameType.SPECTATOR);
-            serverPlayer.displayClientMessage(Component.translatable("chat.message.limitedrespawns.lost_respawns_no_time"), false);
+            serverPlayer.displayClientMessage(Component.translatable("purgatory.limitedrespawns.lost_respawns_no_time"), false);
         } else {
-            this.setRespawns(respawns - LimitedRespawns.config.loseRespawnCount.get());
-            serverPlayer.displayClientMessage(Component.translatable("chat.message.limitedrespawns.lost_respawns_no_time", this.getValue(LRConstants.RESPAWNS)), false);
+            setValue(LRConstants.DEAD, false);
+            if(serverPlayer.gameMode.getGameModeForPlayer() == GameType.SPECTATOR){
+                serverPlayer.setGameMode(GameType.SURVIVAL);
+            }
+            this.setRespawns(respawns - amountToLose);
         }
     }
 
@@ -71,8 +76,15 @@ public class LRData extends LRDataHolder implements ILRData {
         if(this.livingEntity.level().isClientSide()){
            throw new RuntimeException("who tf is running this on the client");
         }
+        amount = Math.max(amount, 0);
+        int old = this.getValue(LRConstants.RESPAWNS);
+        if(old == amount) return;
 
+        String lostOrGained = old < amount ? "gained":"lost";
         this.setValue(LRConstants.RESPAWNS, amount);
+        if(livingEntity instanceof ServerPlayer serverPlayer){
+            serverPlayer.displayClientMessage(Component.translatable("chat.message.limitedrespawns.respawns_changed", lostOrGained, old, amount), false);
+        }
     }
 
     @Override

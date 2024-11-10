@@ -1,4 +1,4 @@
-package mc.mian.limitedrespawns.util;
+package mc.mian.limitedrespawns.api;
 
 import net.minecraft.nbt.Tag;
 
