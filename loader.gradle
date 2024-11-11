@@ -182,7 +182,7 @@ publishMods {
             accessToken = CURSE_API_KEY
             projectId = "${rootProject.curseforge_id}"
             minecraftVersions.add("${rootProject.minecraft_version}")
-            embeds("common-network", "forge-config-api-port-fabric")
+            embeds("forge-config-api-port-fabric")
         }
     }
 
@@ -193,7 +193,7 @@ publishMods {
             projectId = "${rootProject.modrinth_id}"
             projectDescription = new File("${rootProject.projectDir}/README.md").text
             minecraftVersions.add("${rootProject.minecraft_version}")
-            embeds("common-network", "forge-config-api-port")
+            embeds("forge-config-api-port")
             if(minimum_minecraft_version != maximum_minecraft_version){
                 minecraftVersionRange {
                     start = "${minimum_minecraft_version}"
