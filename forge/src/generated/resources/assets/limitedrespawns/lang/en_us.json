@@ -1,6 +1,5 @@
 {
-  "chat.message.limitedrespawns.welcome_msg": "Welcome, you have %s respawn(s)",
-  "chat.message.limitedrespawns.get_respawns": "%s has %s respawn(s)",
+  "chat.message.limitedrespawns.get_respawns": "%s has %s respawns",
   "chat.message.limitedrespawns.respawns_changed": "You've %s some respawns: %s -> %s",
   "chat.message.limitedrespawns.set_respawns": "Set %s's respawns to %s",
   "chat.message.limitedrespawns.time_to_get_respawns": "%s more respawn(s) required to respawn: %s respawn(s) will be given in %s minute(s)",

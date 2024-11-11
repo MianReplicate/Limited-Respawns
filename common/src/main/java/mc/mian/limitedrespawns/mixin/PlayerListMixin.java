@@ -12,10 +12,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(PlayerList.class)
 public class PlayerListMixin {
     @Inject(method = "respawn", at = @At(value = "RETURN"))
-    public void onRespawn(ServerPlayer player, boolean keepInventory, Entity.RemovalReason reason, CallbackInfoReturnable<ServerPlayer> cir){
-        if(reason == Entity.RemovalReason.KILLED) {
-            ServerPlayer newPlayer = cir.getReturnValue();
-            LRData.get(newPlayer).ifPresent(LRData::onRespawn);
-        }
+    public void onRespawn(ServerPlayer player, boolean keepEverything, CallbackInfoReturnable<ServerPlayer> cir){
+        ServerPlayer newPlayer = cir.getReturnValue();
+        LRData.get(newPlayer).ifPresent(LRData::onRespawn);
     }
 }

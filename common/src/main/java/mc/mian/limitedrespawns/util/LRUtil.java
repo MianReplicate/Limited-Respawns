@@ -8,10 +8,10 @@ import mc.mian.limitedrespawns.data.LRData;
 import mc.mian.limitedrespawns.data.LRDataHolder;
 import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 
 public class LRUtil {
     public static ResourceLocation modLoc(String name) {
-        return ResourceLocation.fromNamespaceAndPath(LRConstants.MOD_ID, name);
+        return new ResourceLocation(LRConstants.MOD_ID, name);
     }
 
     public static List<GameProfile> getGameProfiles(MinecraftServer server, boolean includedSaved){
@@ -68,7 +68,7 @@ public class LRUtil {
                 String uuidString = gameProfile.getId().toString();
                 Path path = playerDir.toPath();
                 Path path2 = Files.createTempFile(path, uuidString + "-", ".dat");
-                NbtIo.writeCompressed(playerTag, path2);
+                NbtIo.writeCompressed(playerTag, path2.toFile());
                 Path path3 = path.resolve(uuidString + ".dat");
                 Path path4 = path.resolve(uuidString + ".dat_old");
                 Util.safeReplaceFile(path3, path2, path4);
@@ -108,7 +108,7 @@ public class LRUtil {
             File file = new File(playerDir, uuidString + ".dat");
             if (file.exists() && file.isFile())
             {
-                CompoundTag tag = NbtIo.readCompressed(file.toPath(), NbtAccounter.unlimitedHeap());
+                CompoundTag tag = NbtIo.readCompressed(file);
                 return tag;
             } else {
                 return null;
@@ -147,8 +147,8 @@ public class LRUtil {
         String timeToGetRespawns = LRUtil.getTimeToRespawnComponent(respawnTick, currentRespawns).getString();
 
         return (long) LimitedRespawns.config.getBasedOnDead(true, LRConfiguration.TimedEnums.TICKS_UNTIL_GAIN_RESPAWNS) > -1 ?
-                Component.literal(diedMessage).withColor(getRandomColor(getGFColors())).append("\n").append(Component.literal(timeToGetRespawns).withColor(getRandomColor(getNBColors()))) :
-                Component.literal(diedMessage).withColor(getRandomColor(getGFColors()));
+                Component.literal(diedMessage).withStyle(Style.EMPTY.withColor(getRandomColor(getGFColors()))).append("\n").append(Component.literal(timeToGetRespawns).withStyle(Style.EMPTY.withColor(getRandomColor(getNBColors())))) :
+                Component.literal(diedMessage).withStyle(Style.EMPTY.withColor(getRandomColor(getGFColors())));
     }
 
     public static List<String> getBothColors(){
@@ -179,6 +179,6 @@ public class LRUtil {
 
     public static int getRandomColor(List<String> colors){
         Random random = new Random();
-        return LimitedRespawns.config.enableWokeColors.get() ? TextColor.parseColor("#"+colors.get(random.nextInt(0, colors.size()))).result().orElseGet(() -> TextColor.fromRgb(16777215)).getValue() : 16777215;
+        return LimitedRespawns.config.enableWokeColors.get() ? TextColor.parseColor("#"+colors.get(random.nextInt(0, colors.size()))).getValue() : 16777215;
     }
 }

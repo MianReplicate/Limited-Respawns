@@ -6,21 +6,23 @@ import mc.mian.limitedrespawns.config.LRConfiguration;
 import mc.mian.limitedrespawns.data.LRData;
 import mc.mian.limitedrespawns.data.LRDataHolder;
 import mc.mian.limitedrespawns.util.LRConstants;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Relative;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.portal.TeleportTransition;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.Optional;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin implements ILRRetrieve {
@@ -56,16 +58,18 @@ public abstract class LivingEntityMixin implements ILRRetrieve {
         if(!lrData.getLivingEntity().level().isClientSide() && lrData.getLivingEntity() instanceof ServerPlayer serverPlayer){
             boolean dead = lrData.getValue(LRConstants.DIED);
             if(dead && lrData.hasEnoughRespawns()){
-                TeleportTransition teleportTransition = serverPlayer.findRespawnPositionAndUseSpawnBlock(true, TeleportTransition.DO_NOTHING);
+                BlockPos respawnPos = serverPlayer.getRespawnPosition();
+                respawnPos = respawnPos != null ? respawnPos : serverPlayer.level().getSharedSpawnPos();
+                ServerLevel serverLevel = serverPlayer.server.getLevel(serverPlayer.getRespawnDimension());
+                serverLevel = serverLevel != null ? serverLevel : serverPlayer.server.overworld();
+
                 serverPlayer.teleportTo(
-                        teleportTransition.newLevel(),
-                        teleportTransition.position().x,
-                        teleportTransition.position().y,
-                        teleportTransition.position().z,
-                        Relative.ROTATION,
-                        teleportTransition.yRot(),
-                        teleportTransition.xRot(),
-                        true);
+                        serverLevel,
+                        respawnPos.getX(),
+                        respawnPos.getY(),
+                        respawnPos.getZ(),
+                        serverPlayer.getYRot(),
+                        serverPlayer.getXRot());
                 lrData.onRespawn();
             }
             lrData.init();
@@ -93,7 +97,7 @@ public abstract class LivingEntityMixin implements ILRRetrieve {
     }
 
     @Inject(method = "dropEquipment", at = @At("HEAD"))
-    private void onDeath(ServerLevel serverLevel, CallbackInfo ci){
+    private void onDeath(CallbackInfo ci){
         LRData lrData = this.limitedRespawns$lrData;
         if(lrData != null && !lrData.getLivingEntity().level().isClientSide() && lrData.getLivingEntity() instanceof ServerPlayer){
             LivingEntity killer = getLastAttacker();

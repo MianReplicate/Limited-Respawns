@@ -8,6 +8,7 @@ import mc.mian.limitedrespawns.util.LRConstants;
 import mc.mian.limitedrespawns.util.LRUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -48,7 +49,7 @@ public class LRData extends LRDataHolder implements ILRData {
         if(this.livingEntity instanceof ServerPlayer serverPlayer && !init){
             init = true;
             if(this.getValue(LRConstants.DIED)) {
-                MutableComponent deadComponent = LRUtil.getTimeToRespawnComponent(this.getValue(LRConstants.GAIN_RESPAWN_TICK), this.getRespawns()).withColor(LRUtil.getRandomColor(LRUtil.getNBColors()));
+                MutableComponent deadComponent = LRUtil.getTimeToRespawnComponent(this.getValue(LRConstants.GAIN_RESPAWN_TICK), this.getRespawns()).withStyle(Style.EMPTY.withColor(LRUtil.getRandomColor(LRUtil.getNBColors())));
 
                 if (LimitedRespawns.config.bannedUponDeath.get()) {
                     serverPlayer.connection.disconnect(deadComponent);
@@ -61,7 +62,7 @@ public class LRData extends LRDataHolder implements ILRData {
                 List<String> messages = (List<String>) LimitedRespawns.config.customWelcomeMessages.get();
                 if(!messages.isEmpty()){
                     String message = messages.get(random.nextInt(0, messages.size()));
-                    serverPlayer.displayClientMessage(Component.literal(message.replaceAll("%s", serverPlayer.getName().getString()).replaceAll("%d", String.valueOf(this.getRespawns()))).withColor(LRUtil.getRandomColor(LRUtil.getBothColors())), false);
+                    serverPlayer.displayClientMessage(Component.literal(message.replaceAll("%s", serverPlayer.getName().getString()).replaceAll("%d", String.valueOf(this.getRespawns()))).withStyle(Style.EMPTY.withColor(LRUtil.getRandomColor(LRUtil.getBothColors()))), false);
                 }
             }
         }
@@ -106,7 +107,7 @@ public class LRData extends LRDataHolder implements ILRData {
                     Random random = new Random();
                     String message = messages.get(random.nextInt(0, messages.size()));
                     serverPlayer.displayClientMessage(
-                            Component.literal("\"" + message.replaceAll("%s", serverPlayer.getName().getString()).replaceAll("%d", String.valueOf(this.getRespawns())) + "\"").withColor(LRUtil.getRandomColor(LRUtil.getBothColors())),
+                            Component.literal("\"" + message.replaceAll("%s", serverPlayer.getName().getString()).replaceAll("%d", String.valueOf(this.getRespawns())) + "\"").withStyle(Style.EMPTY.withColor(LRUtil.getRandomColor(LRUtil.getBothColors()))),
                             false);
                 }
             }
@@ -128,7 +129,7 @@ public class LRData extends LRDataHolder implements ILRData {
 
         if(livingEntity instanceof ServerPlayer serverPlayer && announce){
             String lostOrGained = old < amount ? "gained":"lost";
-            MutableComponent component = Component.literal(Component.translatable("chat.message.limitedrespawns.respawns_changed", lostOrGained, old, amount).getString()).withColor(LRUtil.getRandomColor(LRUtil.getBothColors()));
+            MutableComponent component = Component.literal(Component.translatable("chat.message.limitedrespawns.respawns_changed", lostOrGained, old, amount).getString()).withStyle(Style.EMPTY.withColor(LRUtil.getRandomColor(LRUtil.getBothColors())));
             serverPlayer.displayClientMessage(component, false);
         }
     }
