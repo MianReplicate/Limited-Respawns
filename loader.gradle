@@ -191,7 +191,7 @@ publishMods {
         modrinth {
             accessToken = MODRINTH_TOKEN
             projectId = "${rootProject.modrinth_id}"
-            projectDescription = new File("${rootProject.projectDir}/README.md").text
+//            projectDescription = new File("${rootProject.projectDir}/README.md").text
             minecraftVersions.add("${rootProject.minecraft_version}")
             embeds("forge-config-api-port")
             if(minimum_minecraft_version != maximum_minecraft_version){
