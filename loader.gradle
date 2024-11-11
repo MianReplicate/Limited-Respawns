@@ -163,16 +163,16 @@ publishMods {
             accessToken = MODRINTH_TOKEN
             projectId = "${rootProject.modrinth_id}"
             minecraftVersions.add("${rootProject.minecraft_version}")
-            projectDescription = new File("${rootProject.projectDir}/README.md").text
+//            projectDescription = new File("${rootProject.projectDir}/README.md").text
             embeds("forge-config-api-port")
-            if(minimum_minecraft_version != maximum_minecraft_version){
-                minecraftVersionRange {
-                    start = "${minimum_minecraft_version}"
-                    end = "${maximum_minecraft_version}"
-
-                    includeSnapshots = true
-                }
-            }
+//            if(minimum_minecraft_version != maximum_minecraft_version){
+//                minecraftVersionRange {
+//                    start = "${minimum_minecraft_version}"
+//                    end = "${maximum_minecraft_version}"
+//
+//                    includeSnapshots = true
+//                }
+//            }
         }
     }
 }
