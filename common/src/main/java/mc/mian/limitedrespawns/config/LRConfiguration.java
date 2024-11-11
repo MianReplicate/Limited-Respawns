@@ -144,6 +144,6 @@ public class LRConfiguration {
     }
 
     private static ForgeConfigSpec.ConfigValue<List<? extends String>> buildStringList(final ForgeConfigSpec.Builder builder, String translationPath, List<? extends String> defaultList, String comment){
-        return builder.comment(comment).translation(translationPath).defineListAllowEmpty(translationPath, defaultList, String.class::isInstance);
+        return builder.comment(comment).translation(translationPath).defineList(translationPath, defaultList, String.class::isInstance);
     }
 }

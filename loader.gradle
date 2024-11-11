@@ -5,65 +5,51 @@ evaluationDependsOn(':common')
 
 def loomPlatform = project.property('loom.platform')
 def projectName
-if(loomPlatform == 'neoforge')
-    projectName = 'NeoForge'
-else if(loomPlatform == 'fabric')
-    projectName = 'Fabric'
-else if (loomPlatform == 'forge') {
+if(loomPlatform == 'forge')
     projectName = 'Forge'
-
-    configurations.configureEach {
-        resolutionStrategy.force("net.sf.jopt-simple:jopt-simple:5.0.4")
-    }
-}
+else
+    projectName = 'Fabric'
 
 def generatedResources = file("src/generated/resources")
 
 sourceSets.main.resources.srcDirs = [ 'src/main/resources', {
-    project(':neoforge').file('src/generated/resources').absolutePath
+    if(loomPlatform == 'fabric'){
+        project(':forge').file('src/generated/resources').absolutePath
+    }
 }
 ]
 
 loom {
     accessWidenerPath.set(project(":common").loom.accessWidenerPath)
-    if(loomPlatform == 'neoforge' || loomPlatform == 'forge'){
+    if(loomPlatform == 'forge'){
         runs {
-            if(loomPlatform == 'neoforge'){
-                data {
-                    data()
-                    programArgs "--all", "--mod", "${mod_id}"
-                    programArgs "--output", generatedResources.absolutePath
-                }
-            }
             client {
                 programArgs "--username", "Replicate###"
             }
         }
 
-        if(loomPlatform == 'forge'){
-            forge {
+        forge {
+            if(accessWidenerFile.exists()) {
                 convertAccessWideners = true
-                extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
-
-                if(file("src/main/resources/${mod_id}.mixins.json").exists()) {
-                    mixinConfig "${mod_id}.mixins.json"
-                }
-
-                if(getRootProject().file("common/src/main/resources/${mod_id}-common.mixins.json").exists()) {
-                    mixinConfig "${mod_id}-common.mixins.json"
-                }
+                extraAccessWideners.add accessWidenerFile.name
             }
-        } else if (loomPlatform == 'neoforge'){
-            mods {
-                forge {
-                    sourceSet project(":neoforge").sourceSets.main
-                }
+
+            if(file("src/main/resources/${mod_id}.mixins.json").exists()) {
+                mixinConfig "${mod_id}.mixins.json"
+            }
+
+            if(getRootProject().file("common/src/main/resources/${mod_id}-common.mixins.json").exists()) {
+                mixinConfig "${mod_id}-common.mixins.json"
+            }
+
+            dataGen {
+                mod "${mod_id}"
             }
         }
     }
 }
 
-def resourceTargets = ['fabric.mod.json', 'neoforge.mods.toml', 'mods.toml']
+def resourceTargets = ['fabric.mod.json', 'mods.toml']
 def intoTargets = ["$rootDir/out/production/resources/", "$rootDir/out/production/${project.name}.main/", "$rootDir/bin/main/"]
 def replaceProperties = [
         mod_id: mod_id,
@@ -79,9 +65,6 @@ def replaceProperties = [
         fabric_loader_version: fabric_loader_version,
         fabric_api_version: fabric_api_version,
         repository_url: repository_url,
-        neo_version_range: neo_version_range,
-        neo_version: neo_version,
-        neo_loader_version_range: neo_loader_version_range,
         forge_version_range: forge_version_range,
         forge_version: forge_version,
         forge_loader_version_range: forge_loader_version_range,
@@ -124,13 +107,11 @@ architectury {
     platformSetupLoomIde()
 
     if(loomPlatform == 'fabric') fabric()
-    else if (loomPlatform == 'neoforge') neoForge()
     else if (loomPlatform == 'forge') forge()
 }
 
 dependencies {
-    // thanks sodium for adding neoforge support, very cool :>
-
+    // thanks sodium for adding forge support, very cool :>
     if(!disable_runtimes.toBoolean()) {
         modRuntimeOnly("mezz.jei:jei-${minecraft_version}-${loomPlatform}:${jei_version}")
 
@@ -142,24 +123,14 @@ dependencies {
         }
     }
 
-    if(loomPlatform != 'forge'){
-        modApi(include("fuzs.forgeconfigapiport:forgeconfigapiport-${loomPlatform}:${forge_config_api_port_version}"))
-    }
-
     switch(loomPlatform){
         case 'forge':
             forge "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-
-            // have to include mixinextras for Forge lol
-            compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixin_extras_version}"))
-            implementation(include("io.github.llamalad7:mixinextras-forge:${mixin_extras_version}"))
             break
         case 'fabric':
             modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
             modApi "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}+${minecraft_version}"
-            break
-        case 'neoforge':
-            neoForge "net.neoforged:neoforge:${neo_version}"
+            modApi(include("fuzs.forgeconfigapiport:forgeconfigapiport-${loomPlatform}:${forge_config_api_port_version}"))
             break
     }
 
@@ -172,27 +143,27 @@ publishMods {
     changelog = new File("${rootProject.projectDir}/changelog.md").text
     modLoaders.add("${loomPlatform}")
     type = STABLE
-    def maximum_minecraft_version = !rootProject.maximum_minecraft_version.isBlank() ? rootProject.maximum_minecraft_version : rootProject.minecraft_version
-    def toDisplay = minimum_minecraft_version != maximum_minecraft_version ? "${minimum_minecraft_version}-${maximum_minecraft_version}" : "${maximum_minecraft_version}"
+    String maximum_minecraft_version = !rootProject.maximum_minecraft_version.isBlank() ? rootProject.maximum_minecraft_version : rootProject.minecraft_version
+    String toDisplay = minimum_minecraft_version != maximum_minecraft_version ? "${minimum_minecraft_version}-${maximum_minecraft_version}" : "${maximum_minecraft_version}"
     displayName = "[${projectName}] ${toDisplay} - ${rootProject.mod_version}"
 
-    var CURSE_API_KEY = project.findProperty("curseforge_token") ?: System.getenv("curseforge_token") ?: ""
-    if (CURSE_API_KEY != "") {
+    String CURSE_TOKEN = findProperty("CURSEFORGE_TOKEN")
+    if (CURSE_TOKEN != null) {
         curseforge {
-            accessToken = CURSE_API_KEY
+            accessToken = CURSE_TOKEN
             projectId = "${rootProject.curseforge_id}"
             minecraftVersions.add("${rootProject.minecraft_version}")
             embeds("forge-config-api-port-fabric")
         }
     }
 
-    var MODRINTH_TOKEN = project.findProperty("modrinth_token") ?: System.getenv("modrinth_token") ?: ""
-    if (MODRINTH_TOKEN != "") {
+    String MODRINTH_TOKEN = findProperty("MODRINTH_TOKEN")
+    if (MODRINTH_TOKEN != null) {
         modrinth {
             accessToken = MODRINTH_TOKEN
             projectId = "${rootProject.modrinth_id}"
-            projectDescription = new File("${rootProject.projectDir}/README.md").text
             minecraftVersions.add("${rootProject.minecraft_version}")
+            projectDescription = new File("${rootProject.projectDir}/README.md").text
             embeds("forge-config-api-port")
             if(minimum_minecraft_version != maximum_minecraft_version){
                 minecraftVersionRange {
@@ -212,7 +183,7 @@ shadowJar {
     exclude 'architectury.common.json'
 
     configurations = [project.configurations.shadowCommon]
-    archiveClassifier.set('dev-shadow')
+    archiveClassifier = 'dev-shadow'
 }
 
 remapJar {
@@ -250,22 +221,15 @@ idea.module {
 
 publishing {
     publications {
-        if(loomPlatform == 'neoforge')
-            mavenNeoForge(MavenPublication) {
-                groupId = group
-                artifactId = mod_id
-                version = version + "-${loomPlatform}"
-                from components.java
-            }
-        else if(loomPlatform == 'fabric')
-            mavenFabric(MavenPublication) {
-                groupId = group
-                artifactId = mod_id
-                version = version + "-${loomPlatform}"
-                from components.java
-            }
-        else if (loomPlatform == 'forge')
+        if(loomPlatform == 'forge')
             mavenForge(MavenPublication) {
+                groupId = group
+                artifactId = mod_id
+                version = version + "-${loomPlatform}"
+                from components.java
+            }
+        else
+            mavenFabric(MavenPublication) {
                 groupId = group
                 artifactId = mod_id
                 version = version + "-${loomPlatform}"

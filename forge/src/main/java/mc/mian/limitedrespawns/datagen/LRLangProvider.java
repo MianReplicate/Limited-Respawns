@@ -2,7 +2,7 @@ package mc.mian.limitedrespawns.datagen;
 
 import mc.mian.limitedrespawns.util.LRConstants;
 import net.minecraft.data.PackOutput;
-import net.neoforged.neoforge.common.data.LanguageProvider;
+import net.minecraftforge.common.data.LanguageProvider;
 
 public class LRLangProvider extends LanguageProvider {
     public static final String MOD_ID = LRConstants.MOD_ID;

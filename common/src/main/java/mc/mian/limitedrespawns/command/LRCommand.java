@@ -13,6 +13,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.GameProfileArgument;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.ArrayList;
@@ -52,7 +53,7 @@ public class LRCommand {
     private static int getRespawns(CommandSourceStack commandSourceStack) throws CommandSyntaxException {
         ServerPlayer serverPlayer = commandSourceStack.getPlayerOrException();
         LRData.get(serverPlayer).ifPresent(lrData -> commandSourceStack.sendSuccess(() ->Component.literal(Component.translatable("chat.message.limitedrespawns.get_respawns",
-                        serverPlayer.getName(), lrData.getRespawns()).getString()).withColor(LRUtil.getRandomColor(LRUtil.getBothColors())), false));
+                        serverPlayer.getName(), lrData.getRespawns()).getString()).withStyle(Style.EMPTY.withColor(LRUtil.getRandomColor(LRUtil.getBothColors()))), false));
 
         return Command.SINGLE_SUCCESS;
     }
@@ -62,7 +63,7 @@ public class LRCommand {
              LRUtil.getDataHolderFromProfile(commandSourceStack.getServer(), gameProfile).ifPresent(dataHolder ->
                      commandSourceStack.sendSuccess(() ->
                              Component.literal(Component.translatable("chat.message.limitedrespawns.get_respawns",
-                                     gameProfile.getName(), dataHolder.getValue(LRConstants.RESPAWNS)).getString()).withColor(LRUtil.getRandomColor(LRUtil.getBothColors())), false)));
+                                     gameProfile.getName(), dataHolder.getValue(LRConstants.RESPAWNS)).getString()).withStyle(Style.EMPTY.withColor(LRUtil.getRandomColor(LRUtil.getBothColors()))), false)));
 
         return Command.SINGLE_SUCCESS;
     }
@@ -70,7 +71,7 @@ public class LRCommand {
     private static int setRespawns(CommandSourceStack commandSourceStack, int amount) throws CommandSyntaxException {
         ServerPlayer serverPlayer = commandSourceStack.getPlayerOrException();
         LRData.get(serverPlayer).ifPresent(lrData -> lrData.setRespawns(amount, false));
-        commandSourceStack.sendSuccess(() -> Component.literal(Component.translatable("chat.message.limitedrespawns.set_respawns", serverPlayer.getName(), amount).getString()).withColor(LRUtil.getRandomColor(LRUtil.getBothColors())), true);
+        commandSourceStack.sendSuccess(() -> Component.literal(Component.translatable("chat.message.limitedrespawns.set_respawns", serverPlayer.getName(), amount).getString()).withStyle(Style.EMPTY.withColor(LRUtil.getRandomColor(LRUtil.getBothColors()))), true);
 
         return Command.SINGLE_SUCCESS;
     }
@@ -84,7 +85,7 @@ public class LRCommand {
                         dataHolder.setValue(LRConstants.RESPAWNS, amount);
                     }
                 });
-                commandSourceStack.sendSuccess(() -> Component.literal(Component.translatable("chat.message.limitedrespawns.set_respawns", gameProfile.getName(), amount).getString()).withColor(LRUtil.getRandomColor(LRUtil.getBothColors())), true);
+                commandSourceStack.sendSuccess(() -> Component.literal(Component.translatable("chat.message.limitedrespawns.set_respawns", gameProfile.getName(), amount).getString()).withStyle(Style.EMPTY.withColor(LRUtil.getRandomColor(LRUtil.getBothColors()))), true);
         });
         return Command.SINGLE_SUCCESS;
     }
