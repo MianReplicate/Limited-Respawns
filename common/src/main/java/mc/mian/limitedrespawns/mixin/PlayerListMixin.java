@@ -14,7 +14,8 @@ public class PlayerListMixin {
     @Inject(method = "respawn", at = @At(value = "RETURN"))
     public void onRespawn(ServerPlayer player, boolean keepInventory, Entity.RemovalReason reason, CallbackInfoReturnable<ServerPlayer> cir){
         if(reason == Entity.RemovalReason.KILLED) {
-            LRData.get(cir.getReturnValue()).ifPresent(LRData::onRespawn);
+            ServerPlayer newPlayer = cir.getReturnValue();
+            LRData.get(newPlayer).ifPresent(LRData::onRespawn);
         }
     }
 }

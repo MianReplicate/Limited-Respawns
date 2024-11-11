@@ -24,6 +24,7 @@ public class LRCommand {
         dispatcher.register(
                 Commands.literal("lr")
                         .then(Commands.literal("setrespawns")
+                                .requires(commandSourceStack -> commandSourceStack.hasPermission(commandSourceStack.getServer().getOperatorUserPermissionLevel()))
                                 .then(Commands.argument("amount", IntegerArgumentType.integer(0))
                                         .executes(commandContext -> setRespawns(commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "amount")))
                                         .then(Commands.argument("players", GameProfileArgument.gameProfile())
@@ -37,6 +38,7 @@ public class LRCommand {
                         .then(Commands.literal("getrespawns")
                                 .executes(commandContext -> getRespawns(commandContext.getSource()))
                                 .then(Commands.argument("players", GameProfileArgument.gameProfile())
+                                        .requires(commandSourceStack -> commandSourceStack.hasPermission(commandSourceStack.getServer().getOperatorUserPermissionLevel()))
                                         .suggests(((context, builder) -> {
                                             ArrayList<String> suggestList = new ArrayList<>();
                                             List<GameProfile> gameProfiles = LRUtil.getGameProfiles(context.getSource().getServer(), true);
@@ -49,8 +51,8 @@ public class LRCommand {
 
     private static int getRespawns(CommandSourceStack commandSourceStack) throws CommandSyntaxException {
         ServerPlayer serverPlayer = commandSourceStack.getPlayerOrException();
-        LRData.get(serverPlayer).ifPresent(lrData -> commandSourceStack.sendSuccess(() ->Component.translatable("chat.message.limitedrespawns.get_respawns",
-                        serverPlayer.getName(), lrData.getRespawns()), false));
+        LRData.get(serverPlayer).ifPresent(lrData -> commandSourceStack.sendSuccess(() ->Component.literal(Component.translatable("chat.message.limitedrespawns.get_respawns",
+                        serverPlayer.getName(), lrData.getRespawns()).getString()).withColor(LRUtil.getRandomColor(LRUtil.getBothColors())), false));
 
         return Command.SINGLE_SUCCESS;
     }
@@ -59,24 +61,30 @@ public class LRCommand {
         gameProfiles.forEach(gameProfile ->
              LRUtil.getDataHolderFromProfile(commandSourceStack.getServer(), gameProfile).ifPresent(dataHolder ->
                      commandSourceStack.sendSuccess(() ->
-                             Component.translatable("chat.message.limitedrespawns.get_respawns",
-                                     gameProfile.getName(), dataHolder.getValue(LRConstants.RESPAWNS)), false)));
+                             Component.literal(Component.translatable("chat.message.limitedrespawns.get_respawns",
+                                     gameProfile.getName(), dataHolder.getValue(LRConstants.RESPAWNS)).getString()).withColor(LRUtil.getRandomColor(LRUtil.getBothColors())), false)));
 
         return Command.SINGLE_SUCCESS;
     }
 
     private static int setRespawns(CommandSourceStack commandSourceStack, int amount) throws CommandSyntaxException {
         ServerPlayer serverPlayer = commandSourceStack.getPlayerOrException();
-        LRData.get(serverPlayer).ifPresent(lrData -> lrData.setRespawns(amount));
-        commandSourceStack.sendSuccess(() -> Component.translatable("chat.message.limitedrespawns.set_respawns", serverPlayer.getName(), amount), true);
+        LRData.get(serverPlayer).ifPresent(lrData -> lrData.setRespawns(amount, false));
+        commandSourceStack.sendSuccess(() -> Component.literal(Component.translatable("chat.message.limitedrespawns.set_respawns", serverPlayer.getName(), amount).getString()).withColor(LRUtil.getRandomColor(LRUtil.getBothColors())), true);
 
         return Command.SINGLE_SUCCESS;
     }
 
     private static int setRespawns(CommandSourceStack commandSourceStack, int amount, Collection<GameProfile> gameProfiles) {
         gameProfiles.forEach(gameProfile -> {
-                LRUtil.saveLRDataToProfile(commandSourceStack.getServer(), gameProfile, dataHolder -> dataHolder.setValue(LRConstants.RESPAWNS, amount));
-                commandSourceStack.sendSuccess(() -> Component.translatable("chat.message.limitedrespawns.set_respawns", gameProfile.getName(), amount), true);
+                LRUtil.saveLRDataToProfile(commandSourceStack.getServer(), gameProfile, dataHolder -> {
+                    if(dataHolder instanceof LRData lrData){
+                        lrData.setRespawns(amount, lrData.getLivingEntity() != commandSourceStack.getPlayer());
+                    } else{
+                        dataHolder.setValue(LRConstants.RESPAWNS, amount);
+                    }
+                });
+                commandSourceStack.sendSuccess(() -> Component.literal(Component.translatable("chat.message.limitedrespawns.set_respawns", gameProfile.getName(), amount).getString()).withColor(LRUtil.getRandomColor(LRUtil.getBothColors())), true);
         });
         return Command.SINGLE_SUCCESS;
     }
