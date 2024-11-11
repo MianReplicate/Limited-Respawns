@@ -7,6 +7,8 @@
 
 **This mod only needs to be installed on the _SERVER!_**
 
+**This description only applies to versions of the mod 3.0.0 & higher. Versions earlier are missing a lot of the advertised features.**
+
 <img src="https://i.imgur.com/Z7KSGQS.gif">
 
 ## 🤔 Features
