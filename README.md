@@ -28,6 +28,7 @@
 ## ❓ FAQ
 - What is the different between this and Limited Lives?
   - Limited Lives reduces your max hearts every time you die and it has different configuration options compared to this mod
+    - If you wanted, you could technically use this mod alongside its sister mod, Lifesteal, for a similar effect.
 - What's up with the random colored messages?
   - These colors are based off the GF & NB pride flag schemes. You can disable them if wanted in the configuration settings. (i felt queer 😛)
 
