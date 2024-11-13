@@ -183,6 +183,9 @@ publishMods {
             projectId = "${rootProject.curseforge_id}"
             minecraftVersions.add("${rootProject.minecraft_version}")
             embeds("forge-config-api-port-fabric")
+            if(loomPlatform == 'fabric'){
+                requires("fabric-api")
+            }
         }
     }
 
@@ -201,6 +204,9 @@ publishMods {
 
                     includeSnapshots = true
                 }
+            }
+            if(loomPlatform == 'fabric'){
+                requires("fabric-api")
             }
         }
     }
