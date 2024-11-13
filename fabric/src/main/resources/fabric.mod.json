@@ -13,7 +13,7 @@
     "issues": "${issue_tracker_url}"
   },
   "license": "${mod_license}",
-  "environment": "client",
+  "environment": "*",
   "entrypoints": {
     "main": [
       "mc.mian.limitedrespawns.fabric.LimitedRespawnsFabric"

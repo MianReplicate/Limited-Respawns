@@ -154,6 +154,9 @@ publishMods {
             projectId = "${rootProject.curseforge_id}"
             minecraftVersions.add("${rootProject.minecraft_version}")
             embeds("forge-config-api-port-fabric")
+            if(loomPlatform == 'fabric'){
+                requires("fabric-api")
+            }
         }
     }
 
@@ -165,6 +168,9 @@ publishMods {
             minecraftVersions.add("${rootProject.minecraft_version}")
 //            projectDescription = new File("${rootProject.projectDir}/README.md").text
             embeds("forge-config-api-port")
+            if(loomPlatform == 'fabric'){
+                requires("fabric-api")
+            }
 //            if(minimum_minecraft_version != maximum_minecraft_version){
 //                minecraftVersionRange {
 //                    start = "${minimum_minecraft_version}"

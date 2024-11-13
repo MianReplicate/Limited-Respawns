@@ -1,3 +1,3 @@
-# Version 3.0.0
+# Version 3.0.1
 ## Changes:
-- Mod rerelease (now named Limited Respawns)
+- Fixed mod not running on client
