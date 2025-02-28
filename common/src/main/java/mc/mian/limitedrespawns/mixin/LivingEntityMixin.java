@@ -12,9 +12,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Relative;
+import net.minecraft.world.entity.RelativeMovement;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.portal.TeleportTransition;
+import net.minecraft.world.level.portal.DimensionTransition;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -56,16 +56,16 @@ public abstract class LivingEntityMixin implements ILRRetrieve {
         if(!lrData.getLivingEntity().level().isClientSide() && lrData.getLivingEntity() instanceof ServerPlayer serverPlayer){
             boolean dead = lrData.getValue(LRConstants.DIED);
             if(dead && lrData.hasEnoughRespawns()){
-                TeleportTransition teleportTransition = serverPlayer.findRespawnPositionAndUseSpawnBlock(true, TeleportTransition.DO_NOTHING);
+                DimensionTransition dimensionTransition = serverPlayer.findRespawnPositionAndUseSpawnBlock(true, DimensionTransition.DO_NOTHING);
                 serverPlayer.teleportTo(
-                        teleportTransition.newLevel(),
-                        teleportTransition.position().x,
-                        teleportTransition.position().y,
-                        teleportTransition.position().z,
-                        Relative.ROTATION,
-                        teleportTransition.yRot(),
-                        teleportTransition.xRot(),
-                        true);
+                        dimensionTransition.newLevel(),
+                        dimensionTransition.pos().x,
+                        dimensionTransition.pos().y,
+                        dimensionTransition.pos().z,
+                        RelativeMovement.ROTATION,
+                        dimensionTransition.yRot(),
+                        dimensionTransition.xRot()
+                );
                 lrData.onRespawn();
             }
             lrData.init();
@@ -93,7 +93,7 @@ public abstract class LivingEntityMixin implements ILRRetrieve {
     }
 
     @Inject(method = "dropEquipment", at = @At("HEAD"))
-    private void onDeath(ServerLevel serverLevel, CallbackInfo ci){
+    private void onDeath(CallbackInfo ci){
         LRData lrData = this.limitedRespawns$lrData;
         if(lrData != null && !lrData.getLivingEntity().level().isClientSide() && lrData.getLivingEntity() instanceof ServerPlayer){
             LivingEntity killer = getLastAttacker();
